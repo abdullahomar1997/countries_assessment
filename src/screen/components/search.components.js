@@ -1,26 +1,27 @@
 import React, { useContext, useEffect, useState } from "react"
 import { Searchbar } from 'react-native-paper';
 import styled from "styled-components/native";
+import { CountriesContext } from "../../service/countries.context";
 
 const SearchContainer = styled.View`
     padding: 5px;
 `;
 
-export const Search = ({ isFavouritesToggled, onFavouritesToggle }) => {
+export const Search = () => {
 
-    const [searchKeyword, setSearchKeyword] = useState(keyword);
+    const { search } = useContext(CountriesContext);
+
+    const [searchKeyword, setSearchKeyword] = useState("");
 
     useEffect(() => {
-        setSearchKeyword(keyword)
-    }, [keyword])
+        setSearchKeyword(searchKeyword)
+    }, [searchKeyword])
 
     return (
         <SearchContainer>
             <Searchbar
-                icon={isFavouritesToggled ? "heart" : "heart-outline"}
-                onIconPress={onFavouritesToggle}
-                placeholder="Search for the location"
-                value={searcshKeyword}
+                placeholder="Search by Country Name"
+                value={searchKeyword}
                 onSubmitEditing={() => {
                     search(searchKeyword);
                 }}

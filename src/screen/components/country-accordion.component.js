@@ -1,33 +1,8 @@
 import * as React from 'react';
 import { List } from 'react-native-paper';
 import XLSX from 'xlsx';
-import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
-import * as Permissions from 'expo-permissions';
 import { shareAsync } from 'expo-sharing';
-
-const dataXML = {
-  person: {
-    name: 'John Doe',
-    age: 25,
-    address: {
-      street: '123 Main St',
-      city: 'New York',
-      country: 'USA',
-    },
-  },
-};
-
-const dataXLS = {
-  Name: 'John Doe',
-  Age: 25,
-  City: 'New York',
-};
-const dataCSV = {
-  Name: 'John Doe',
-  Age: 28,
-  City: 'New York',
-};
 
 export const CountryAccordion = ({country}) => { 
   
@@ -43,7 +18,7 @@ export const CountryAccordion = ({country}) => {
           left={props => <List.Icon {...props} icon="export" />}>
             <List.Item title="Export to CSV" onPress={() => exportCSV(country,fileNameCSV)} />
             <List.Item title="Export to XML" onPress={() => exportXML(country, fileNameXML)} />
-            <List.Item title="Export to XLS" onPress={() => exportXLS(country, fileNameXLS)} />
+            {/* <List.Item title="Export to XLS" onPress={() => exportXLS(country, fileNameXLS)} /> */}
         </List.Accordion>
       </List.Section>
     // </ScrollView>
@@ -68,28 +43,21 @@ const exportCSV = (data,file) => {
 }
 
 const generateXML = (data) => {
-  const rootElement = 'country';
-  const indentSpaces = 2;
-
-  const generateXMLContent = (obj, indentLevel) => { 
-    const indent = ' '.repeat(indentSpaces * indentLevel);
-    let xml = '';
-
-    for (const [key, value] of Object.entries(obj)) {
-      if (typeof value === 'object') {
-        xml += `${indent}<${key}>\n${generateXMLContent(value, indentLevel + 1)}${indent}</${key}>\n`;
-      } else {
-        xml += `${indent}<${key}>${value}</${key}>\n`;
-      }
+  
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  
+  xml += '<countries>\n';
+  xml += '<country>\n';
+  
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      xml += `  <${key}>${data[key]}</${key}>\n`;
     }
-
-    return xml;
-  };
-
-   // Construct the complete XML document
-   const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>\n<${rootElement}>\n${generateXMLContent(data, 1)}</${rootElement}>`;
-
-   return xmlContent;
+  }
+  
+  xml += '</country>';
+  xml += '</countries>';
+  return xml;
 };
 
 const generateCSV = (data) => {
@@ -116,10 +84,6 @@ const createXLSFile = async (data) => {
     for (let i = 0; i < fileText.length; i++) {
       buffer[i] = fileText.charCodeAt(i) & 0xff;
     }
-
-    // const output = String.fromCharCode.apply(null, buffer)
-
-    // const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xls' });
 
     return fileText;
 };
